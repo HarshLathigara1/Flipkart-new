@@ -1,7 +1,10 @@
 package lathigara.harsh.flipkart.Fragments;
 
 
+import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Handler;
@@ -22,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,6 +49,14 @@ import lathigara.harsh.flipkart.Models.HorizontalProductScrollModel;
 import lathigara.harsh.flipkart.Models.SliderModel;
 import lathigara.harsh.flipkart.R;
 
+import static lathigara.harsh.flipkart.DBQueries.categoryModelList;
+import static lathigara.harsh.flipkart.DBQueries.firebaseFirestore;
+
+import static lathigara.harsh.flipkart.DBQueries.list;
+import static lathigara.harsh.flipkart.DBQueries.loadCategories;
+import static lathigara.harsh.flipkart.DBQueries.loadFragmentData;
+import static lathigara.harsh.flipkart.DBQueries.loadedCategoriesNames;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -51,7 +64,9 @@ public class HomeFragment extends Fragment {
     // CATEGORY //
     private RecyclerView recyclerView;
     private CategoryaAdapter categoryaAdapter;
+    public static SwipeRefreshLayout swipeRefreshLayout;
     // CATEGORY //
+
 
     // BANNER SLIDER //
     private ViewPager bannerSliderViewPager;
@@ -74,14 +89,16 @@ public class HomeFragment extends Fragment {
     private Button horizontalViewAllBtn;
     private RecyclerView horizontalRecyclerView;
 
+    private ImageView noInternet;
+
     // Horizontal ProductLayout//
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    private List<CategoryModel> categoryModelList;
-    private FirebaseFirestore firebaseFirestore;
+
+    // private FirebaseFirestore firebaseFirestore;
 
 
     @Override
@@ -89,31 +106,34 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        noInternet = view.findViewById(R.id.no_internetConnection);
+        ConnectivityManager connectivityManager =(ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            noInternet.setVisibility(View.GONE);
+
+        }else {
+            Glide.with(this).load(R.drawable.noconnectionimage).into(noInternet);
+            noInternet.setVisibility(View.VISIBLE);
+
+        }
         // CATEGORY //
         recyclerView = view.findViewById(R.id.category_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        categoryModelList = new ArrayList<CategoryModel>();
+        swipeRefreshLayout = view.findViewById(R.id.refreshLayout);
         categoryaAdapter = new CategoryaAdapter(categoryModelList);
         recyclerView.setAdapter(categoryaAdapter);
+        if (categoryModelList.size() == 0) {
+            loadCategories(categoryaAdapter, getContext());
 
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("CATEGORIES").orderBy("index").get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                categoryModelList.add(new CategoryModel(documentSnapshot.get("icon").toString(), documentSnapshot.get("categoryName").toString()));
-                            }
-                            categoryaAdapter.notifyDataSetChanged();
-                        } else {
-                            String error = task.getException().getMessage();
-                            Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+        } else {
+            categoryaAdapter.notifyDataSetChanged();
+        }
+
+        // firebaseFirestore = FirebaseFirestore.getInstance();
+
         /*categoryModelList.add(new CategoryModel("link", "Home"));
         categoryModelList.add(new CategoryModel("link", "Home"));
         categoryModelList.add(new CategoryModel("link", "Home"));
@@ -241,7 +261,7 @@ public class HomeFragment extends Fragment {
         testinglayout.setOrientation(RecyclerView.VERTICAL);
         testing.setLayoutManager(testinglayout);
 
-        final List<HomePageModel> homePageModelList = new ArrayList<>();
+
 
         /*homePageModelList.add(new HomePageModel(0,sliderModelList));
         homePageModelList.add(new HomePageModel(1,R.mipmap.oppo,"#000000"));
@@ -253,49 +273,41 @@ public class HomeFragment extends Fragment {
         homePageModelList.add(new HomePageModel(1,R.mipmap.oppo,"#000000"));
 */
 
-        homePageAdapter = new HomePageAdapter(homePageModelList);
+
+        if (list.size() == 0) {
+            loadedCategoriesNames.add("HOME");
+            list.add(new ArrayList<HomePageModel>());
+            homePageAdapter = new HomePageAdapter(list.get(0));
+            loadFragmentData(homePageAdapter, getContext(), 0, "Home");
+        } else {
+            homePageAdapter = new HomePageAdapter(list.get(0));
+            homePageAdapter.notifyDataSetChanged();
+        }
+
         testing.setAdapter(homePageAdapter);
 
-        firebaseFirestore.collection("CATEGORIES").document("HOME").collection("TOP_DEALS").orderBy("index").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        // testing //
+        //refresh//
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                        if ((long) documentSnapshot.get("view_type") == 0) {
-                            List<SliderModel> sliderModelList = new ArrayList<>();
-                            long no_of_banners = (long) documentSnapshot.get("no_of_banners");
-                            for (long x = 1; x < no_of_banners + 1; x++) {
-                                sliderModelList.add(new SliderModel(documentSnapshot.get("banner_" + x).toString(), documentSnapshot.get("banner_" + x + "_background").toString()));
-                            }
-                            homePageModelList.add(new HomePageModel(0, sliderModelList));
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                categoryModelList.clear();
+                list.clear();
+                loadedCategoriesNames.clear();
 
-                        } else if ((long) documentSnapshot.get("view_type") == 1) {
-                            homePageModelList.add(new HomePageModel(1, documentSnapshot.get("strip_ad_banner").toString(), documentSnapshot.get("background").toString()));
 
-                        } else if ((long) documentSnapshot.get("view_type") == 2) {
-                            List<HorizontalProductScrollModel>horizontalProductScrollModels = new ArrayList<>();
-                            long no_of_products = (long) documentSnapshot.get("no_of_products");
-                            for (long x = 1; x < no_of_products + 1; x++) {
-                               // horizontalProductScrollModels.add(new HorizontalProductScrollModel(documentSnapshot.get("product_ID"+x).toString(),(documentSnapshot.get("product_image"+x).toString(),(documentSnapshot.get("product_title"+x).toString(),(documentSnapshot.get("product_subtitle"+x).toString(),(documentSnapshot.get("product_price"+x).toString()));
-                                horizontalProductScrollModels.add(new HorizontalProductScrollModel(documentSnapshot.get("product_ID_"+x).toString(),
-                                        documentSnapshot.get("product_image_"+x).toString(),documentSnapshot.get("product_title_"+x).toString(),documentSnapshot.get("product_subtitle_"+x).toString(),documentSnapshot.get("product_price_"+x).toString()));
+                loadCategories(categoryaAdapter, getContext());
+                loadedCategoriesNames.add("HOME");
+                list.add(new ArrayList<HomePageModel>());
+                loadFragmentData(homePageAdapter, getContext(), 0, "HOME");
 
-                            }
-                            homePageModelList.add(new HomePageModel(2,documentSnapshot.get("layout_title").toString(),documentSnapshot.get("layout_background").toString(), horizontalProductScrollModels));
 
-                        } else if ((long) documentSnapshot.get("view_type") == 3) {
-
-                        }
-
-                    }
-                    homePageAdapter.notifyDataSetChanged();
-                } else {
-                    String error = task.getException().getMessage();
-                    Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
-                }
             }
         });
-        // testing //
+        //refresh//
 
         return view;
     }

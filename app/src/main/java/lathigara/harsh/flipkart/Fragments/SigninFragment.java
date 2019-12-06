@@ -39,11 +39,13 @@ public class SigninFragment extends Fragment {
     private FrameLayout parentFrameLayout;
     private TextView forgotPassword;
 
+
     private EditText edtEmail,edtPass;
     private ImageButton imgCloseButton;
     private Button btnSignIn;
     private FirebaseAuth mAuth;
     private String emailPattern ="[a-zA-Z0-9._-]+@[a-z]+.[a-z]+";
+    public  static  boolean disableCloseBtn = false;
 
 
     public SigninFragment() {
@@ -64,6 +66,11 @@ public class SigninFragment extends Fragment {
         btnSignIn = view.findViewById(R.id.btnSignInLog);
         mAuth = FirebaseAuth.getInstance();
         forgotPassword = view.findViewById(R.id.txtForegetPassword);
+        if(disableCloseBtn){
+            imgCloseButton.setVisibility(View.GONE);
+        }else {
+            imgCloseButton.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
@@ -133,6 +140,7 @@ public class SigninFragment extends Fragment {
 
     private void mainIntent() {
         Intent mainI =new Intent(getActivity(), MainActivity.class);
+        disableCloseBtn = false;
         startActivity(mainI);
     }
     private void checkInputs(){

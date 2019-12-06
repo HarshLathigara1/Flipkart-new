@@ -62,7 +62,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txtfreeCoupen" />
 
     <TextView
-        android:id="@+id/cuttedPrice"
+        android:id="@+id/cuttedPricee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="31dp"
@@ -77,10 +77,10 @@
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
         android:backgroundTint="#28253d"
-        app:layout_constraintBottom_toBottomOf="@+id/cuttedPrice"
-        app:layout_constraintEnd_toEndOf="@+id/cuttedPrice"
-        app:layout_constraintStart_toStartOf="@+id/cuttedPrice"
-        app:layout_constraintTop_toTopOf="@+id/cuttedPrice" />
+        app:layout_constraintBottom_toBottomOf="@+id/cuttedPricee"
+        app:layout_constraintEnd_toEndOf="@+id/cuttedPricee"
+        app:layout_constraintStart_toStartOf="@+id/cuttedPricee"
+        app:layout_constraintTop_toTopOf="@+id/cuttedPricee" />
 
     <TextView
         android:id="@+id/offerApplied"
@@ -170,10 +170,11 @@
         app:layout_constraintTop_toBottomOf="@+id/coupen_redeemptionLayout">
 
         <TextView
+            android:id="@+id/txtRemove"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:drawableStart="@drawable/ic_remove"
 
+            android:drawableStart="@drawable/ic_remove"
             android:drawablePadding="10dp"
             android:gravity="center"
             android:text="Remove items" />

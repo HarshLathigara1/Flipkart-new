@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import lathigara.harsh.flipkart.DBQueries;
 import lathigara.harsh.flipkart.Models.AddressesModel;
 import lathigara.harsh.flipkart.R;
 
@@ -21,12 +23,16 @@ import static lathigara.harsh.flipkart.Fragments.MyAccountFragment.MANAGE_ADDRES
 
 public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.ViewHolder>{
     List<AddressesModel>addressesModelList;
+    // select add logic //
     private int MODE;
+
     private int preSelectedPosition;
+    // select add logic //
 
     public AddressesAdapter(List<AddressesModel> addressesModelList,int MODE) {
         this.addressesModelList = addressesModelList;
         this.MODE = MODE;
+        preSelectedPosition  = DBQueries.selecteAdress;
     }
 
 
@@ -55,12 +61,15 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView fullname,addresses,pincode;
         private ImageView icon;
+        private LinearLayout optioncontainer;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             fullname = itemView.findViewById(R.id.name);
             addresses = itemView.findViewById(R.id.address);
             pincode = itemView.findViewById(R.id.pinCode);
             icon = itemView.findViewById(R.id.icon_view);
+            optioncontainer  =itemView.findViewById(R.id.option_container);
+
         }
         private void setData(String name, String add, String pin, Boolean selected, final int position){
             fullname.setText(name);
@@ -82,10 +91,33 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.View
                                 addressesModelList.get(preSelectedPosition).setSelected(false);
                                 refreshItem(preSelectedPosition, position);
                                 preSelectedPosition = position;
+                                DBQueries.selecteAdress = position;
                             }
                     }
                 });
             }else if (MODE == MANAGE_ADDRESS){
+                optioncontainer.setVisibility(View.GONE);
+                icon.setImageResource(R.drawable.ic_vert);
+                icon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        optioncontainer.setVisibility(View.VISIBLE);
+                        refreshItem(preSelectedPosition,preSelectedPosition);
+                        preSelectedPosition = position;
+
+
+                    }
+                });
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        refreshItem(preSelectedPosition,preSelectedPosition);
+                        preSelectedPosition = -1;
+
+                    }
+                });
+
 
             }
         }

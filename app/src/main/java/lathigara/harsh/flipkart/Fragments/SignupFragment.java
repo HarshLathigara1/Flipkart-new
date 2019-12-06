@@ -28,10 +28,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lathigara.harsh.flipkart.Activities.MainActivity;
@@ -43,14 +46,14 @@ import lathigara.harsh.flipkart.R;
 public class SignupFragment extends Fragment {
     private TextView alreadyHaveAnAccount;
     private FrameLayout parentframeLayout;
-    private EditText edtEmail,edtName,edtPass,edtConfirm;
+    private EditText edtEmail, edtName, edtPass, edtConfirm;
     private ImageButton btnClose;
     private Button btnSignUp;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
-    private String emailPattern ="[a-zA-Z0-9._-]+@[a-z]+.[a-z]+";
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+";
     private FirebaseFirestore firebaseFirestore;
-
+    public static boolean disableCloseBtn = false;
 
 
     public SignupFragment() {
@@ -62,7 +65,7 @@ public class SignupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_signup, container, false);
+        View view = inflater.inflate(R.layout.fragment_signup, container, false);
         alreadyHaveAnAccount = view.findViewById(R.id.txtSignIn);
         parentframeLayout = getActivity().findViewById(R.id.register_framlayout);
 
@@ -73,16 +76,21 @@ public class SignupFragment extends Fragment {
         btnClose = view.findViewById(R.id.btnSignUpClose);
         btnSignUp = view.findViewById(R.id.btnSignInLog);
         //progressBar = view.findViewById(R.id.progressBarSignUp);
-      //  progressBar.setVisibility(View.INVISIBLE);
+        //  progressBar.setVisibility(View.INVISIBLE);
         mAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
-        
-        return  view;
+        if (disableCloseBtn) {
+            btnClose.setVisibility(View.GONE);
+        } else {
+            btnClose.setVisibility(View.VISIBLE);
+        }
+
+        return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        
+
         alreadyHaveAnAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,106 +178,155 @@ public class SignupFragment extends Fragment {
                 CheckEmailAndPass();
 
 
-
             }
         });
     }
-    private void checkInputs(){
-        if (!TextUtils.isEmpty(edtEmail.getText())){
-            if (!TextUtils.isEmpty(edtName.getText())){
-                if (!TextUtils.isEmpty(edtPass.getText()) && edtPass.length() >= 8){
-                    if (!TextUtils.isEmpty(edtConfirm.getText())){
+
+    private void checkInputs() {
+        if (!TextUtils.isEmpty(edtEmail.getText())) {
+            if (!TextUtils.isEmpty(edtName.getText())) {
+                if (!TextUtils.isEmpty(edtPass.getText()) && edtPass.length() >= 8) {
+                    if (!TextUtils.isEmpty(edtConfirm.getText())) {
                         btnSignUp.setEnabled(true);
                         btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimary));
 
-                    }else{
+                    } else {
                         btnSignUp.setEnabled(false);
                         btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
                     }
-                }else {
+                } else {
                     btnSignUp.setEnabled(false);
                     btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
                 }
 
-            }else{
+            } else {
                 btnSignUp.setEnabled(false);
                 btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
             }
 
-        }else {
+        } else {
             btnSignUp.setEnabled(false);
             btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
 
         }
     }
-    private void CheckEmailAndPass(){
+
+    private void CheckEmailAndPass() {
         Drawable cutomError = getResources().getDrawable(R.drawable.ic_arrow_);
-        cutomError.setBounds(0,0,cutomError.getIntrinsicWidth(),cutomError.getIntrinsicHeight());
-        if (edtEmail.getText().toString().matches(emailPattern)){
-            if (edtPass.getText().toString().equals(edtConfirm.getText().toString())){
-               // progressBar.setVisibility(View.VISIBLE);
+        cutomError.setBounds(0, 0, cutomError.getIntrinsicWidth(), cutomError.getIntrinsicHeight());
+        if (edtEmail.getText().toString().matches(emailPattern)) {
+            if (edtPass.getText().toString().equals(edtConfirm.getText().toString())) {
+                // progressBar.setVisibility(View.VISIBLE);
                 btnSignUp.setEnabled(false);
                 btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                mAuth.createUserWithEmailAndPassword(edtEmail.getText().toString(),edtPass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                mAuth.createUserWithEmailAndPassword(edtEmail.getText().toString(), edtPass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            Map<Object,String> userData = new HashMap<>();
-                            userData.put("name",edtName.getText().toString());
+                        if (task.isSuccessful()) {
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("name", edtName.getText().toString());
                             // userData.put("name",edtName.getText().toString());
-                            firebaseFirestore.collection("Users").add(userData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            firebaseFirestore.collection("USERS").document(mAuth.getUid()).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    if (task.isSuccessful()){
-                                        mainIntent();
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        CollectionReference collectionRef = firebaseFirestore.collection("USERS").document(mAuth.getUid()).collection("USER_DATA");
 
-                                    }else{
-                                       // progressBar.setVisibility(View.INVISIBLE);
+
+                                        // maps //
+                                        Map<String, Object> wishListMap = new HashMap<>();
+                                        wishListMap.put("list_size", (long) 0);
+
+                                        Map<String, Object> myCartMap = new HashMap<>();
+                                        myCartMap.put("list_size", (long) 0);
+
+                                        Map<String, Object> myAddress = new HashMap<>();
+                                        myAddress.put("list_size", (long) 0);
+
+
+                                        final List<String> documentsNames = new ArrayList<>();
+                                        documentsNames.add("MY_WISHLIST");
+                                        documentsNames.add("MY_CART");
+                                        documentsNames.add("MY_ADDRESSES");
+
+                                        List<Map<String, Object>> documentFields = new ArrayList<>();
+                                        documentFields.add(wishListMap);
+                                        documentFields.add(myCartMap);
+                                        documentFields.add(myAddress);
+
+                                        // quyery Loop //
+                                        for (int x = 0; x < documentsNames.size(); x++) {
+                                            final int finalX = x;
+                                            collectionRef.document(documentsNames.get(x)).set(documentFields.get(x)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+
+                                                        if (finalX == documentsNames.size() - 1) {
+                                                            mainIntent();
+                                                        }
+
+                                                    } else {
+                                                        btnSignUp.setEnabled(true);
+                                                        btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimary));
+                                                        String error = task.getException().getMessage();
+                                                        Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+
+                                                    }
+
+                                                }
+                                            });
+                                        }
+                                        // quyery Loop //
+
+
+                                    } else {
+                                        // progressBar.setVisibility(View.INVISIBLE);
                                         btnSignUp.setEnabled(true);
                                         btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimary));
-                                        String error =task.getException().getMessage();
-                                        Toast.makeText(getActivity(),error,Toast.LENGTH_LONG).show();
+                                        String error = task.getException().getMessage();
+                                        Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
                                     }
 
                                 }
                             });
 
 
-
-                        }else{
-                           // progressBar.setVisibility(View.INVISIBLE);
+                        } else {
+                            // progressBar.setVisibility(View.INVISIBLE);
                             btnSignUp.setEnabled(true);
                             btnSignUp.setTextColor(getResources().getColor(R.color.colorPrimary));
-                            String error =task.getException().getMessage();
-                            Toast.makeText(getActivity(),error,Toast.LENGTH_LONG).show();
+                            String error = task.getException().getMessage();
+                            Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
 
-            }else{
-                edtConfirm.setError("Please Match Your Password",cutomError);
+            } else {
+                edtConfirm.setError("Please Match Your Password", cutomError);
 
             }
 
-        }else{
-            edtEmail.setError("Invalid Email",cutomError);
+        } else {
+            edtEmail.setError("Invalid Email", cutomError);
 
         }
 
     }
 
     private void mainIntent() {
-        Intent mainI =new Intent(getActivity(), MainActivity.class);
+        Intent mainI = new Intent(getActivity(), MainActivity.class);
         startActivity(mainI);
+        disableCloseBtn = false;
         getActivity().finish();
     }
 
     private void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(parentframeLayout.getId(),fragment);
+        fragmentTransaction.replace(parentframeLayout.getId(), fragment);
         fragmentTransaction.commit();
     }
 }

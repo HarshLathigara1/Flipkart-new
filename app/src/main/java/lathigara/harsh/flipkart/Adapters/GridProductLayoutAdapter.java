@@ -40,7 +40,7 @@ public class GridProductLayoutAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View convertView, final ViewGroup viewGroup) {
+    public View getView(final int i, View convertView, final ViewGroup viewGroup) {
         View view;
         if (convertView == null){
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.horizontal_scroll_item_layout,null);
@@ -49,7 +49,10 @@ public class GridProductLayoutAdapter extends BaseAdapter {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     Intent productDetailsIntent = new Intent(viewGroup.getContext(), ProdutDetailsActivity.class);
+                    productDetailsIntent.putExtra("productId",horizontalProductScrollModelList.get(i).getProductId());
+
                     viewGroup.getContext().startActivity(productDetailsIntent);
                 }
             });
@@ -57,8 +60,8 @@ public class GridProductLayoutAdapter extends BaseAdapter {
             TextView  productTitle = view.findViewById(R.id.h_s_product_title);
             TextView productDescription =view.findViewById(R.id.h_s_product_description);
             TextView productprice = view.findViewById(R.id.h_s_product_price);
-           // productImage.setImageResource(horizontalProductScrollModelList.get(i).getProductImage());
-           // Glide.with(convertView.getContext()).load(horizontalProductScrollModelList.get())
+            Glide.with(viewGroup.getContext()).load(horizontalProductScrollModelList.get(i).getProductImage()).into(productImage);
+            //Glide.with(convertView.getContext()).load(horizontalProductScrollModelList.get(i).getProductImage()).into(productImage);
             productTitle.setText(horizontalProductScrollModelList.get(i).getProductTitle());
             productDescription.setText(horizontalProductScrollModelList.get(i).getProductDescription());
             productprice.setText(horizontalProductScrollModelList.get(i).getProductPrice());

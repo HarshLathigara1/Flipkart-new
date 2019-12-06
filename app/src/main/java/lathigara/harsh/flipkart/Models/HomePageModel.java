@@ -66,11 +66,30 @@ public class HomePageModel {
 
     // STRIP AD BANNER //
 
-    // horizontal Product Layout //
+    // horizontal Product Layout // starts
         private String title;
         private List<HorizontalProductScrollModel>horizontalProductScrollModelList;
+        private List<WishlistModel>viewAllActivityList;
 
-    public HomePageModel(int type, String title,String backgroundColor, List<HorizontalProductScrollModel> horizontalProductScrollModelList) {
+    public HomePageModel(int type, String title,String backgroundColor, List<HorizontalProductScrollModel> horizontalProductScrollModelList,List<WishlistModel>viewAllActivityList) {
+        this.type = type;
+        this.title = title;
+        this.backgroundColor  =backgroundColor;
+        this.horizontalProductScrollModelList = horizontalProductScrollModelList;
+        this.viewAllActivityList = viewAllActivityList;
+    }
+
+    public List<WishlistModel> getViewAllActivityList() {
+        return viewAllActivityList;
+    }
+
+    public void setViewAllActivityList(List<WishlistModel> viewAllActivityList) {
+        this.viewAllActivityList = viewAllActivityList;
+    }
+    // horizontal Product Layout // ends
+
+    // grid starts .//
+    public HomePageModel(int type, String title, String backgroundColor, List<HorizontalProductScrollModel> horizontalProductScrollModelList) {
         this.type = type;
         this.title = title;
         this.backgroundColor  =backgroundColor;
@@ -92,7 +111,7 @@ public class HomePageModel {
     public void setHorizontalProductScrollModelList(List<HorizontalProductScrollModel> horizontalProductScrollModelList) {
         this.horizontalProductScrollModelList = horizontalProductScrollModelList;
     }
-    // horizontal Product Layout // // GRID PRODUCT LAYOUT //
+    // GRID PRODUCT LAYOUT //
 
 
 

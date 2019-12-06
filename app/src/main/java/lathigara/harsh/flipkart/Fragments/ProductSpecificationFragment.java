@@ -14,15 +14,19 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import lathigara.harsh.flipkart.Activities.ProdutDetailsActivity;
 import lathigara.harsh.flipkart.Adapters.ProductSpecificationAdapter;
 import lathigara.harsh.flipkart.Models.ProductSpecificationModel;
 import lathigara.harsh.flipkart.R;
+
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ProductSpecificationFragment extends Fragment {
     private RecyclerView productRecyclerView;
+     public  static List<ProductSpecificationModel>productSpecificationModelList;
 
 
     public ProductSpecificationFragment() {
@@ -39,8 +43,8 @@ public class ProductSpecificationFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         productRecyclerView.setLayoutManager(linearLayoutManager);
-        List<ProductSpecificationModel> productSpecificationModelList = new ArrayList<>();
-        productSpecificationModelList.add(new ProductSpecificationModel(0, "General"));
+
+       /* productSpecificationModelList.add(new ProductSpecificationModel(0, "General"));
         productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
         productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
         productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
@@ -52,7 +56,8 @@ public class ProductSpecificationFragment extends Fragment {
         productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
         productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
         productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
-        productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));
+        productSpecificationModelList.add(new ProductSpecificationModel(1, "RAM", "4GB"));*/
+
 
         ProductSpecificationAdapter productSpecificationAdapter = new ProductSpecificationAdapter(productSpecificationModelList);
 

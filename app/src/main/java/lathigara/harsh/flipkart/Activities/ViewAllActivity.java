@@ -22,11 +22,15 @@ import lathigara.harsh.flipkart.R;
 public class ViewAllActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private GridView gridView;
+    public static List<WishlistModel>wishlistModelsList;
+    public static  List<HorizontalProductScrollModel>horizontalProductScrollModelList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_all);
+        getSupportActionBar().setTitle(getIntent().getStringExtra("title"));
         recyclerView = findViewById(R.id.recycler_view);
         gridView = findViewById(R.id.gridView);
         int layout_code = getIntent().getIntExtra("layout_code",-1);
@@ -36,17 +40,14 @@ public class ViewAllActivity extends AppCompatActivity {
             layoutManager.setOrientation(RecyclerView.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
             List<WishlistModel> list = new ArrayList<>();
-            list.add(new WishlistModel(R.mipmap.oppo, "opp F11 Pro", 2, "3", 145, "Rs 49999", "rs 599999", "Cash On Delivery"));
-            list.add(new WishlistModel(R.mipmap.oppo, "opp F11 Pro", 2, "3", 145, "Rs 49999", "rs 599999", "Cash On Delivery"));
-            list.add(new WishlistModel(R.mipmap.oppo, "opp F11 Pro", 2, "3", 145, "Rs 49999", "rs 599999", "Cash On Delivery"));
-            list.add(new WishlistModel(R.mipmap.oppo, "opp F11 Pro", 2, "3", 145, "Rs 49999", "rs 599999", "Cash On Delivery"));
+                list = wishlistModelsList;
             WishlistAdapter wishlistAdapter = new WishlistAdapter(list, false);
             recyclerView.setAdapter(wishlistAdapter);
             wishlistAdapter.notifyDataSetChanged();
         }else{
 
             gridView.setVisibility(View.VISIBLE);
-            List<HorizontalProductScrollModel> horizontalProductScrollModelList = new ArrayList<>();
+           /* List<HorizontalProductScrollModel> horizontalProductScrollModelList = new ArrayList<>();*/
            /* horizontalProductScrollModelList.add(new HorizontalProductScrollModel(R.mipmap.oppo, "oppo f11 pro", "Good One", "Rs 20990"));
             horizontalProductScrollModelList.add(new HorizontalProductScrollModel(R.mipmap.oppo, "oppo f11 pro", "Good One", "Rs 20990"));
             horizontalProductScrollModelList.add(new HorizontalProductScrollModel(R.mipmap.oppo, "oppo f11 pro", "Good One", "Rs 20990"));
@@ -72,4 +73,5 @@ public class ViewAllActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

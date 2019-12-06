@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.FrameLayout;
 
 import lathigara.harsh.flipkart.Fragments.SigninFragment;
@@ -36,5 +37,15 @@ public class RegisterActivity extends AppCompatActivity {
         fragmentTransaction.replace(registerFramLayout.getId(),fragment);
         fragmentTransaction.commit();
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            SignupFragment.disableCloseBtn = false;
+            SigninFragment.disableCloseBtn = false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     // signup Login fragments//
 }

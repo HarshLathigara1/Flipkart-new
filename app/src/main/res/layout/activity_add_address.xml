@@ -10,6 +10,7 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:nestedScrollingEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +29,7 @@
                 app:srcCompat="@mipmap/image4" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/cirty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16sp"
@@ -48,8 +49,9 @@
                 android:ems="10"
                 android:hint="Locality Street "
                 android:inputType="textMultiLine"
-                android:lines="3"
+                android:isScrollContainer="true"
 
+                android:lines="3"
                 android:textColor="#000000" />
 
             <EditText
@@ -61,6 +63,7 @@
                 android:ems="10"
                 android:hint="Flat No Building Name "
                 android:inputType="textMultiLine"
+                android:isScrollContainer="true"
                 android:lines="3"
                 android:textColor="#000000" />
 
@@ -80,14 +83,15 @@
                     android:inputType="number"
                     android:textColor="@android:color/darker_gray" />
 
-                <EditText
-                    android:id="@+id/Spinner"
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/stateSpinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
+                    android:backgroundTint="#9e9e9e"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:hint="pinCode"
+
                     android:inputType="number"
                     android:textColor="@android:color/darker_gray" />
             </LinearLayout>

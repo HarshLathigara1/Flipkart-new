@@ -23,8 +23,9 @@ public class MyAccountFragment extends Fragment {
     public MyAccountFragment() {
         // Required empty public constructor
     }
-
+        // logic //
     public static final int MANAGE_ADDRESS  =1;
+    // logic //
     private Button viewAll;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

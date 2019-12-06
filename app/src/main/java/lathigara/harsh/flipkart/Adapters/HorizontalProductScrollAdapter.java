@@ -21,6 +21,7 @@ import lathigara.harsh.flipkart.R;
 
 public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<HorizontalProductScrollAdapter.ViewHolder> {
     private List<HorizontalProductScrollModel>horizontalProductScrollModelLis;
+    public static String ProId ;
 
     public HorizontalProductScrollAdapter(List<HorizontalProductScrollModel> horizontalProductScrollModelLis) {
         this.horizontalProductScrollModelLis = horizontalProductScrollModelLis;
@@ -40,10 +41,13 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
         String title  = horizontalProductScrollModelLis.get(position).getProductTitle();
         String description  = horizontalProductScrollModelLis.get(position).getProductDescription();
         String price  = horizontalProductScrollModelLis.get(position).getProductPrice();
+        String productId = horizontalProductScrollModelLis.get(position).getProductId();
         holder.setProductImage(icon);
         holder.setProductTitle(title);
         holder.setProductPrice(price);
         holder.setProductDescription(description);
+        ProId = productId;
+      //  holder.setProductId(productId);
 
     }
 
@@ -60,6 +64,7 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView productTitle,productDescription,productPrice;
         private ImageView productImage;
+      //  public  String productId ;
 
 
         public ViewHolder(@NonNull final View itemView) {
@@ -70,10 +75,12 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
             productPrice = itemView.findViewById(R.id.h_s_product_price);
 
 
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent productDetailsIntent = new Intent(itemView.getContext(), ProdutDetailsActivity.class);
+                    productDetailsIntent.putExtra("productId",HorizontalProductScrollAdapter.ProId);
                     itemView.getContext().startActivity(productDetailsIntent);
                 }
             });
@@ -92,5 +99,6 @@ public class HorizontalProductScrollAdapter extends RecyclerView.Adapter<Horizon
         private void setProductPrice(String price){
             productPrice.setText(price);
         }
+
     }
 }

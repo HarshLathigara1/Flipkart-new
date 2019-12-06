@@ -24,4 +24,12 @@
     <string name="orderindicator">orderIndicator</string>
     <string name="redeem">redeem</string>
     <string name="rewardscheck">rewardscheck</string>
+
+    <string-array name="india_states" >
+        <item> India </item>
+        <item> India </item>
+        <item> India </item>
+        <item> India </item>
+
+    </string-array>
 </resources>
